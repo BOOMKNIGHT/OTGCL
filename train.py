@@ -105,7 +105,7 @@ def train(model, optimizer):
     optimizer.step()
     return loss.item()
 
-def test(model, data, split):
+def test_nc(model, data, split):
     model.eval()
     edge_index_weight = torch.ones_like(data.edge_index[0]).float()
     z = model(data.x, data.edge_index, edge_index_weight)
@@ -113,6 +113,15 @@ def test(model, data, split):
     result = LREvaluator()(z, data.y, split)
     return result
 
+from eval import LinearRegressionEvaluator, linear_regression
+def test_dp(model, data):
+    model.eval()
+    if data.edge_weight is None:
+        data.edge_weight = torch.ones_like(data.edge_index[0]).float()
+    z = model(data.x, data.edge_index, data.edge_weight)
+    evaluator = LinearRegressionEvaluator()
+    result = linear_regression(z, data, data.degree_y, evaluator, split='rand:0.1', num_epochs=3000)
+    return result
 
 if __name__ == '__main__':
     print(os.path.basename(__file__))
@@ -120,8 +129,12 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--dataset', type=str, default='Cora')
     parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--config', type=str, default='config.yaml')
+    parser.add_argument('--config', type=str, default='config1.yaml')
+    parser.add_argument('--task', type=str, default='node_classification')
     args = parser.parse_args()
+
+    assert args.task in ["node_classification", "degree_prediction", "link_prediction"]
+
     param = vars(args)
     config = yaml.load(open(param['config']), Loader=SafeLoader)[param['dataset']]
     for key in config:
@@ -132,12 +145,14 @@ if __name__ == '__main__':
     random.seed(param['seed'])
     device = torch.device(param['device'])
     wandb.init(config=args)
-
-    micros = []
-    macros = []
+    
+    resultset1 = []
+    resultset2 = []
+    
     for i in range(0, 5):
         data = get_dataset(path = "../data" ,name = param["dataset"])
         data = data.to(device)
+        print(data.x.shape[0])
         cost = get_cost_matrix(param["cost_type"])
         edge_index_ = to_undirected(data.edge_index)
         data.degree_y = degree(edge_index_[1])
@@ -162,16 +177,27 @@ if __name__ == '__main__':
                 loss = train(model, optimizer)
                 wandb.log({"loss":loss})
                 pbar.set_description(f"Loss: {loss:.4f}")
-                
-        split = get_split(num_samples=data.x.shape[0], train_ratio=0.1, test_ratio=0.1)
-        res = test(model, data, split)
-        print("----micro_f1:{}----macro_f1:{}----".format(res['micro_f1'], res['macro_f1']))
-        micros.append(res['micro_f1'])
-        macros.append(res['macro_f1'])
+        if param['task'] == 'node_classification':
+            split = get_split(num_samples=data.x.shape[0], train_ratio=0.1, test_ratio=0.1)
+            res = test_nc(model, data, split)
+            print("----micro_f1:{}----macro_f1:{}----".format(res['micro_f1'], res['macro_f1']))
+            resultset1.append(res['micro_f1'])
+            resultset2.append(res['macro_f1'])
+        elif param['task'] == 'degree_prediction':
+            res = test_dp(model, data)
+            print("----mae:{}----r2:{}----".format(res['mae'], res['r2']))
+            resultset1.append(res['mae'])
+            resultset2.append(res['r2'])
 
-    micros = np.array(micros)
-    macros = np.array(macros)
-    wandb.run.summary["micro_f1_mean"] = np.mean(micros)
-    wandb.run.summary["micro_f1_std"] = np.std(micros)
-    wandb.run.summary["macro_f1_mean"] = np.mean(macros)
-    wandb.run.summary["macro_f1_std"] = np.std(macros)
+    resultset1 = np.array(resultset1)
+    resultset2 = np.array(resultset2)
+    if param['task'] == 'node_classification':
+        wandb.run.summary["micro_f1_mean"] = np.mean(resultset1)
+        wandb.run.summary["micro_f1_std"] = np.std(resultset1)
+        wandb.run.summary["macro_f1_mean"] = np.mean(resultset2)
+        wandb.run.summary["macro_f1_std"] = np.std(resultset2)
+    elif param['task'] == 'degree_prediction':
+        wandb.run.summary["mae_mean"] = np.mean(resultset1)
+        wandb.run.summary["mae_std"] = np.std(resultset1)
+        wandb.run.summary["r2_mean"] = np.mean(resultset2)
+        wandb.run.summary["r2_std"] = np.std(resultset2)

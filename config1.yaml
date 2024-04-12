@@ -1,0 +1,159 @@
+Cora:
+  activation: 'prelu'
+  base_model: 'GCNConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.4
+  drop_feature_rate_2: 0.3
+  keep_prob_1: 0.5
+  keep_prob_2: 0.4
+  p: 0.5
+  learning_rate: 0.001  
+  num_epochs: 500
+  num_hidden: 256
+  num_proj_hidden: 512
+  reg_lambda: 0.001
+  tau: 0.5
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Citeseer:
+  activation: 'relu'
+  base_model: 'GCNConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.6
+  drop_feature_rate_2: 0.9
+  keep_prob_1: 0.5
+  keep_prob_2: 0.2
+  p: 0
+  learning_rate: 0.001  
+  num_epochs: 200
+  num_hidden: 128
+  num_proj_hidden: 512
+  reg_lambda: 0.001
+  tau: 0.7
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Pubmed:
+  activation: 'prelu'
+  base_model: 'GCNConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.7
+  drop_feature_rate_2: 0.9
+  keep_prob_1: 0.8
+  keep_prob_2: 0.8
+  p: 0.4
+  learning_rate: 0.001  
+  num_epochs: 100
+  num_hidden: 512
+  num_proj_hidden: 512
+  reg_lambda: 0.001
+  tau: 0.5
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Texas:
+  activation: 'prelu'
+  base_model: 'GraphConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.4
+  drop_feature_rate_2: 0.3
+  keep_prob_1: 0.3
+  keep_prob_2: 0.5
+  p: 0.7
+  learning_rate: 0.01  
+  num_epochs: 800
+  num_hidden: 256
+  num_proj_hidden: 256
+  reg_lambda: 0.001
+  tau: 0.4
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Wisconsin:
+  activation: 'prelu'
+  base_model: 'GraphConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.6
+  drop_feature_rate_2: 0.7
+  keep_prob_1: 0.6
+  keep_prob_2: 0.1
+  p: 0.6
+  learning_rate: 0.01  
+  num_epochs: 800
+  num_hidden: 256
+  num_proj_hidden: 512
+  reg_lambda: 0.001
+  tau: 0.3
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Cornell:
+  activation: 'prelu'
+  base_model: 'GraphConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.5
+  drop_feature_rate_2: 0.6
+  keep_prob_1: 0.4
+  keep_prob_2: 0.2
+  p: 0.3
+  learning_rate: 0.01  
+  num_epochs: 1800
+  num_hidden: 512
+  num_proj_hidden: 128
+  reg_lambda: 0.001
+  tau: 0.3
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Chameleon:
+  activation: 'prelu'
+  base_model: 'GCNConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.4
+  drop_feature_rate_2: 0.4
+  keep_prob_1: 0.7
+  keep_prob_2: 0.5
+  p: 0.1
+  learning_rate: 0.001  
+  num_epochs: 1500
+  num_hidden: 512
+  num_proj_hidden: 512
+  reg_lambda: 0.001
+  tau: 0.3
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2
+
+Squirrel:
+  activation: 'prelu'
+  base_model: 'GCNConv'
+  distance: 'emd'
+  drop_feature_rate_1: 0.3
+  drop_feature_rate_2: 0.5
+  keep_prob_1: 0.7
+  keep_prob_2: 0.9
+  p: 0.
+  learning_rate: 0.005  
+  num_epochs: 700
+  num_hidden: 512
+  num_proj_hidden: 128
+  reg_lambda: 0.001
+  tau: 0.1
+  weight_decay: 0.00001
+  drop_scheme: 'rand'
+  cost_type: 'cos'
+  num_layers: 2

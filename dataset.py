@@ -1,6 +1,7 @@
 import os.path as osp
 
-from torch_geometric.datasets import Planetoid, WikipediaNetwork, WebKB, Amazon, Actor, Twitch, LastFMAsia
+from torch_geometric.datasets import Planetoid, WikipediaNetwork, WebKB, Amazon, Actor, Twitch, LastFMAsia, Coauthor
+from ogb.nodeproppred import PygNodePropPredDataset
 import torch_geometric.transforms as T
 import pandas as pd
 import networkx as nx
@@ -30,7 +31,7 @@ def get_label(data, box_num):
     return data
 
 def get_dataset(path, name):
-    assert name in ['Cora', 'Citeseer', 'Pubmed', 'Cornell', 'Texas', 'Wisconsin', 'Chameleon', 'Crocodile', 'Squirrel', 'Photo', 'Computers', 'Actor', 'EN', 'ES', 'LastFMAsia']
+    assert name in ['Physics', 'Cora', 'Citeseer', 'Pubmed', 'Cornell', 'Texas', 'Wisconsin', 'Chameleon', 'Crocodile', 'Squirrel', 'Photo', 'Computers', 'Actor', 'EN', 'ES', 'LastFMAsia', 'ogbn-arxiv']
     
     if name in ['Cora', 'Citeseer', 'Pubmed']:
         return Planetoid(osp.join(path, 'pyg-format', 'Planetoid'), name=name, transform=T.NormalizeFeatures())[0]
@@ -49,7 +50,11 @@ def get_dataset(path, name):
         return Twitch(osp.join(path, 'pyg-format', 'Twitch'), name=name, transform=T.NormalizeFeatures())[0]
     elif name in ['LastFMAsia']:
         return LastFMAsia(osp.join(path, 'pyg-format', 'LastFMAsia'), transform=T.NormalizeFeatures())[0]
-    
+    elif name.startswith('ogbn'):
+        return PygNodePropPredDataset(root=osp.join(path, 'pyg-format', 'OGB'), name=name, transform=T.NormalizeFeatures())[0]
+    elif name in ['Physics']:
+        return Coauthor(osp.join(path, 'pyg-format', 'Physics'), name=name, transform=T.NormalizeFeatures())[0]
+
 
 def read_data(path, datasetName):
     G = nx.read_adjlist(osp.join(path, 'ntx-format', datasetName, "{}_adjlist.txt".format(datasetName)),
